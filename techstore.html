@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TechStore — Компьютерные комплектующие</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #111118;
+    --surface2: #18181f;
+    --border: #ffffff0f;
+    --accent: #5b6bff;
+    --accent2: #00e5c3;
+    --text: #f0f0f8;
+    --muted: #7070a0;
+    --red: #ff4560;
+    --yellow: #ffd166;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* NOISE TEXTURE */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 40px;
+    height: 64px;
+    background: rgba(10,10,15,0.85);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800; font-size: 22px;
+    letter-spacing: -0.5px;
+    color: var(--text);
+    text-decoration: none;
+  }
+  .logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links a {
+    color: var(--muted); text-decoration: none;
+    font-size: 14px; font-weight: 500;
+    transition: color .2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+  .nav-right { display: flex; gap: 12px; align-items: center; }
+  .cart-btn {
+    background: var(--accent);
+    color: #fff;
+    border: none; cursor: pointer;
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px; font-weight: 500;
+    transition: opacity .2s;
+    position: relative;
+  }
+  .cart-btn:hover { opacity: .85; }
+  .cart-badge {
+    position: absolute; top: -6px; right: -6px;
+    background: var(--red); color: #fff;
+    width: 18px; height: 18px; border-radius: 50%;
+    font-size: 11px; display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+  }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex; align-items: center;
+    padding: 100px 40px 60px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute; inset: 0; z-index: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 70% 50%, rgba(91,107,255,0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 40% 40% at 20% 80%, rgba(0,229,195,0.07) 0%, transparent 60%);
+  }
+  .hero-grid {
+    position: absolute; inset: 0; z-index: 0; opacity: 0.04;
+    background-image:
+      linear-gradient(var(--accent) 1px, transparent 1px),
+      linear-gradient(90deg, var(--accent) 1px, transparent 1px);
+    background-size: 60px 60px;
+  }
+  .hero-content { position: relative; z-index: 1; max-width: 620px; }
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: rgba(91,107,255,0.15);
+    border: 1px solid rgba(91,107,255,0.3);
+    color: #8890ff;
+    padding: 6px 14px; border-radius: 100px;
+    font-size: 13px; font-weight: 500;
+    margin-bottom: 28px;
+    animation: fadeUp .6s ease both;
+  }
+  .hero-badge::before { content: ''; width: 7px; height: 7px; border-radius: 50%; background: var(--accent2); animation: pulse 2s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+  h1 {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: clamp(40px, 6vw, 72px);
+    line-height: 1.05;
+    letter-spacing: -2px;
+    margin-bottom: 24px;
+    animation: fadeUp .7s .1s ease both;
+  }
+  h1 .grad {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .hero-sub {
+    color: var(--muted); font-size: 17px; line-height: 1.7;
+    margin-bottom: 40px;
+    animation: fadeUp .7s .2s ease both;
+  }
+  .hero-btns {
+    display: flex; gap: 16px; flex-wrap: wrap;
+    animation: fadeUp .7s .3s ease both;
+  }
+  .btn-primary {
+    background: var(--accent); color: #fff;
+    padding: 14px 32px; border-radius: 10px;
+    font-family: 'DM Sans'; font-size: 15px; font-weight: 500;
+    text-decoration: none; border: none; cursor: pointer;
+    transition: transform .2s, box-shadow .2s;
+    box-shadow: 0 0 0 rgba(91,107,255,0);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(91,107,255,.4); }
+  .btn-ghost {
+    background: transparent; color: var(--text);
+    padding: 14px 32px; border-radius: 10px;
+    font-family: 'DM Sans'; font-size: 15px; font-weight: 500;
+    text-decoration: none; border: 1px solid var(--border);
+    transition: border-color .2s, background .2s; cursor: pointer;
+  }
+  .btn-ghost:hover { border-color: rgba(255,255,255,.2); background: rgba(255,255,255,.04); }
+  .hero-stats {
+    display: flex; gap: 48px; margin-top: 64px;
+    animation: fadeUp .7s .4s ease both;
+  }
+  .stat-item { display: flex; flex-direction: column; gap: 4px; }
+  .stat-num {
+    font-family: 'Syne'; font-size: 28px; font-weight: 700;
+    color: var(--text);
+  }
+  .stat-label { font-size: 13px; color: var(--muted); }
+
+  /* FLOATING CARD */
+  .hero-visual {
+    position: absolute; right: 60px; top: 50%; transform: translateY(-50%);
+    z-index: 1;
+    animation: floatCard 1s .5s ease both, floatAnim 4s 1.5s ease-in-out infinite;
+  }
+  @keyframes floatAnim { 0%,100%{transform:translateY(-50%) translateY(0)} 50%{transform:translateY(-50%) translateY(-12px)} }
+  .gpu-card {
+    width: 260px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .gpu-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(91,107,255,.6), transparent);
+  }
+  .gpu-icon { font-size: 48px; margin-bottom: 16px; }
+  .gpu-name { font-family: 'Syne'; font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+  .gpu-spec { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+  .gpu-price { font-family: 'Syne'; font-size: 22px; font-weight: 800; color: var(--accent2); }
+  .gpu-tag {
+    position: absolute; top: 16px; right: 16px;
+    background: rgba(255,69,96,.15); color: var(--red);
+    border: 1px solid rgba(255,69,96,.3);
+    font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 100px;
+  }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes floatCard { from{opacity:0;transform:translateY(calc(-50% + 30px))} to{opacity:1;transform:translateY(-50%)} }
+
+  /* SECTIONS */
+  section { padding: 80px 40px; position: relative; }
+  .section-header { margin-bottom: 48px; }
+  .section-tag {
+    font-size: 12px; font-weight: 600; letter-spacing: 2px;
+    text-transform: uppercase; color: var(--accent);
+    margin-bottom: 12px;
+  }
+  .section-title {
+    font-family: 'Syne'; font-size: clamp(28px, 4vw, 42px);
+    font-weight: 800; letter-spacing: -1px;
+    line-height: 1.1;
+  }
+
+  /* CATEGORIES */
+  .cats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 16px;
+  }
+  .cat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px 20px;
+    cursor: pointer;
+    transition: border-color .2s, transform .2s, background .2s;
+    text-align: center;
+  }
+  .cat-card:hover {
+    border-color: rgba(91,107,255,.4);
+    transform: translateY(-4px);
+    background: var(--surface2);
+  }
+  .cat-card.active { border-color: var(--accent); background: rgba(91,107,255,.08); }
+  .cat-emoji { font-size: 32px; margin-bottom: 12px; }
+  .cat-name { font-family: 'Syne'; font-size: 13px; font-weight: 700; }
+  .cat-count { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+  /* PRODUCTS */
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 20px;
+  }
+  .product-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    transition: transform .25s, box-shadow .25s, border-color .25s;
+    cursor: pointer;
+    position: relative;
+  }
+  .product-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px rgba(0,0,0,.4);
+    border-color: rgba(91,107,255,.3);
+  }
+  .product-card.hidden { display: none; }
+  .prod-img {
+    height: 180px;
+    background: var(--surface2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 64px;
+    position: relative;
+    overflow: hidden;
+  }
+  .prod-img::after {
+    content: '';
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg, transparent 50%, rgba(10,10,15,.6));
+  }
+  .prod-badge {
+    position: absolute; top: 12px; left: 12px; z-index: 1;
+    font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 100px;
+  }
+  .badge-new { background: rgba(0,229,195,.15); color: var(--accent2); border: 1px solid rgba(0,229,195,.3); }
+  .badge-sale { background: rgba(255,69,96,.15); color: var(--red); border: 1px solid rgba(255,69,96,.3); }
+  .badge-hot { background: rgba(255,209,102,.15); color: var(--yellow); border: 1px solid rgba(255,209,102,.3); }
+  .prod-body { padding: 20px; }
+  .prod-cat { font-size: 11px; color: var(--accent); font-weight: 600; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px; }
+  .prod-name { font-family: 'Syne'; font-size: 15px; font-weight: 700; margin-bottom: 6px; line-height: 1.3; }
+  .prod-spec { font-size: 13px; color: var(--muted); margin-bottom: 16px; }
+  .prod-footer { display: flex; align-items: center; justify-content: space-between; }
+  .prod-price { font-family: 'Syne'; font-size: 20px; font-weight: 800; }
+  .prod-price .old { font-size: 13px; color: var(--muted); text-decoration: line-through; margin-right: 8px; font-weight: 400; font-family: 'DM Sans'; }
+  .add-btn {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: var(--accent); border: none; cursor: pointer;
+    color: #fff; font-size: 20px;
+    display: flex; align-items: center; justify-content: center;
+    transition: transform .15s, background .2s;
+    flex-shrink: 0;
+  }
+  .add-btn:hover { transform: scale(1.1); }
+  .add-btn.added { background: var(--accent2); color: var(--bg); }
+
+  /* BANNER */
+  .promo-banner {
+    background: linear-gradient(135deg, rgba(91,107,255,.15), rgba(0,229,195,.08));
+    border: 1px solid rgba(91,107,255,.2);
+    border-radius: 24px;
+    padding: 48px 60px;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 32px;
+    position: relative; overflow: hidden;
+  }
+  .promo-banner::before {
+    content: '';
+    position: absolute; right: -60px; top: -60px;
+    width: 300px; height: 300px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(91,107,255,.15), transparent 70%);
+  }
+  .promo-content { max-width: 500px; }
+  .promo-label { font-size: 12px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: var(--accent2); margin-bottom: 12px; }
+  .promo-title { font-family: 'Syne'; font-size: 32px; font-weight: 800; letter-spacing: -1px; margin-bottom: 12px; }
+  .promo-sub { color: var(--muted); font-size: 15px; line-height: 1.6; }
+  .promo-discount {
+    font-family: 'Syne'; font-size: 72px; font-weight: 800;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    white-space: nowrap; flex-shrink: 0;
+  }
+
+  /* CART SIDEBAR */
+  .cart-overlay {
+    position: fixed; inset: 0; z-index: 200;
+    background: rgba(0,0,0,.6);
+    backdrop-filter: blur(4px);
+    opacity: 0; pointer-events: none;
+    transition: opacity .3s;
+  }
+  .cart-overlay.open { opacity: 1; pointer-events: all; }
+  .cart-panel {
+    position: fixed; right: 0; top: 0; bottom: 0; z-index: 201;
+    width: 400px; max-width: 100vw;
+    background: var(--surface);
+    border-left: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    transform: translateX(100%);
+    transition: transform .35s cubic-bezier(.4,0,.2,1);
+  }
+  .cart-panel.open { transform: translateX(0); }
+  .cart-header {
+    padding: 24px 28px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .cart-title { font-family: 'Syne'; font-size: 20px; font-weight: 800; }
+  .close-btn {
+    width: 36px; height: 36px; border-radius: 8px;
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text); font-size: 18px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .2s;
+  }
+  .close-btn:hover { background: rgba(255,255,255,.08); }
+  .cart-items { flex: 1; overflow-y: auto; padding: 20px 28px; }
+  .cart-empty { text-align: center; padding: 60px 0; color: var(--muted); }
+  .cart-empty-icon { font-size: 48px; margin-bottom: 16px; }
+  .cart-item {
+    display: flex; gap: 14px; align-items: center;
+    padding: 14px 0; border-bottom: 1px solid var(--border);
+  }
+  .ci-icon {
+    width: 52px; height: 52px; border-radius: 12px;
+    background: var(--surface2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px; flex-shrink: 0;
+  }
+  .ci-info { flex: 1; min-width: 0; }
+  .ci-name { font-family: 'Syne'; font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .ci-price { font-size: 13px; color: var(--accent2); font-weight: 600; margin-top: 4px; }
+  .ci-qty { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .qty-btn {
+    width: 26px; height: 26px; border-radius: 6px;
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text); cursor: pointer; font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    transition: background .2s;
+  }
+  .qty-btn:hover { background: rgba(255,255,255,.08); }
+  .qty-num { font-family: 'Syne'; font-size: 14px; font-weight: 700; min-width: 20px; text-align: center; }
+  .cart-footer {
+    padding: 20px 28px;
+    border-top: 1px solid var(--border);
+  }
+  .cart-total {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 20px;
+  }
+  .ct-label { font-size: 14px; color: var(--muted); }
+  .ct-amount { font-family: 'Syne'; font-size: 24px; font-weight: 800; }
+
+  /* ORDER MODAL */
+  .modal-overlay {
+    position: fixed; inset: 0; z-index: 300;
+    background: rgba(0,0,0,.7);
+    backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; pointer-events: none;
+    transition: opacity .3s;
+    padding: 20px;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    padding: 40px;
+    width: 100%; max-width: 480px;
+    transform: scale(.95);
+    transition: transform .3s;
+  }
+  .modal-overlay.open .modal { transform: scale(1); }
+  .modal-title { font-family: 'Syne'; font-size: 24px; font-weight: 800; margin-bottom: 8px; }
+  .modal-sub { color: var(--muted); font-size: 14px; margin-bottom: 28px; }
+  .form-group { margin-bottom: 18px; }
+  label { font-size: 13px; font-weight: 500; color: var(--muted); display: block; margin-bottom: 6px; }
+  input, select {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 16px;
+    color: var(--text);
+    font-family: 'DM Sans'; font-size: 15px;
+    outline: none;
+    transition: border-color .2s;
+  }
+  input:focus, select:focus { border-color: var(--accent); }
+  select option { background: var(--surface2); }
+  .modal-btns { display: flex; gap: 12px; margin-top: 28px; }
+  .success-state { text-align: center; padding: 20px 0; }
+  .success-icon { font-size: 56px; margin-bottom: 16px; }
+  .success-title { font-family: 'Syne'; font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+  .success-sub { color: var(--muted); font-size: 14px; line-height: 1.6; }
+
+  /* FOOTER */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 48px 40px;
+    display: flex; gap: 32px; justify-content: space-between; flex-wrap: wrap;
+    color: var(--muted); font-size: 13px;
+  }
+  .footer-logo { font-family: 'Syne'; font-weight: 800; font-size: 18px; color: var(--text); margin-bottom: 8px; }
+  .footer-logo span { color: var(--accent); }
+  .footer-col h4 { font-family: 'Syne'; font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 12px; letter-spacing: .5px; }
+  .footer-col a { display: block; color: var(--muted); text-decoration: none; margin-bottom: 8px; transition: color .2s; }
+  .footer-col a:hover { color: var(--text); }
+
+  /* TOAST */
+  .toast {
+    position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: var(--surface2); border: 1px solid rgba(0,229,195,.3);
+    color: var(--text); padding: 12px 24px; border-radius: 100px;
+    font-size: 14px; font-weight: 500;
+    z-index: 400; white-space: nowrap;
+    transition: transform .3s cubic-bezier(.4,0,.2,1);
+    pointer-events: none;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* SCROLL ANIM */
+  .reveal { opacity: 0; transform: translateY(30px); transition: opacity .6s, transform .6s; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  @media (max-width: 900px) {
+    .hero-visual { display: none; }
+    nav { padding: 0 20px; }
+    .nav-links { display: none; }
+    section { padding: 60px 20px; }
+    .promo-banner { padding: 32px 28px; flex-direction: column; }
+    .promo-discount { font-size: 48px; }
+    footer { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="logo" href="#"><span>T</span>echStore</a>
+  <ul class="nav-links">
+    <li><a href="#catalog">Каталог</a></li>
+    <li><a href="#promo">Акции</a></li>
+    <li><a href="#about">О нас</a></li>
+    <li><a href="#contacts">Контакты</a></li>
+  </ul>
+  <div class="nav-right">
+    <button class="cart-btn" onclick="toggleCart()">
+      🛒 Корзина
+      <span class="cart-badge" id="cartBadge" style="display:none">0</span>
+    </button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-content">
+    <div class="hero-badge">Новые поставки 2024</div>
+    <h1>Лучшие<br>комплектующие<br><span class="grad">для вашего ПК</span></h1>
+    <p class="hero-sub">Процессоры, видеокарты, накопители и периферия от ведущих производителей. Быстрая доставка по всей России.</p>
+    <div class="hero-btns">
+      <a class="btn-primary" href="#catalog">Смотреть каталог</a>
+      <a class="btn-ghost" href="#promo">Текущие акции</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item"><span class="stat-num">1 200+</span><span class="stat-label">Товаров</span></div>
+      <div class="stat-item"><span class="stat-num">98%</span><span class="stat-label">Довольных клиентов</span></div>
+      <div class="stat-item"><span class="stat-num">1–3 дня</span><span class="stat-label">Доставка</span></div>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="gpu-card">
+      <div class="gpu-tag">−20%</div>
+      <div class="gpu-icon">🎮</div>
+      <div class="gpu-name">RTX 4070 Super</div>
+      <div class="gpu-spec">12 ГБ GDDR6X · 192-bit</div>
+      <div class="gpu-price">54 990 ₽</div>
+    </div>
+  </div>
+</section>
+
+<!-- CATEGORIES -->
+<section id="catalog">
+  <div class="section-header reveal">
+    <div class="section-tag">Ассортимент</div>
+    <div class="section-title">Категории товаров</div>
+  </div>
+  <div class="cats-grid reveal">
+    <div class="cat-card active" onclick="filterCat('all', this)">
+      <div class="cat-emoji">🖥</div>
+      <div class="cat-name">Все товары</div>
+      <div class="cat-count">12 позиций</div>
+    </div>
+    <div class="cat-card" onclick="filterCat('cpu', this)">
+      <div class="cat-emoji">⚡</div>
+      <div class="cat-name">Процессоры</div>
+      <div class="cat-count">3 позиции</div>
+    </div>
+    <div class="cat-card" onclick="filterCat('gpu', this)">
+      <div class="cat-emoji">🎮</div>
+      <div class="cat-name">Видеокарты</div>
+      <div class="cat-count">3 позиции</div>
+    </div>
+    <div class="cat-card" onclick="filterCat('ssd', this)">
+      <div class="cat-emoji">💾</div>
+      <div class="cat-name">Накопители</div>
+      <div class="cat-count">3 позиции</div>
+    </div>
+    <div class="cat-card" onclick="filterCat('ram', this)">
+      <div class="cat-emoji">🧮</div>
+      <div class="cat-name">Оперативная память</div>
+      <div class="cat-count">3 позиции</div>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCTS -->
+<section style="padding-top:0">
+  <div class="products-grid" id="productGrid">
+
+    <div class="product-card" data-cat="cpu">
+      <div class="prod-img">⚡<span class="prod-badge badge-hot">🔥 Хит</span></div>
+      <div class="prod-body">
+        <div class="prod-cat">Процессоры</div>
+        <div class="prod-name">Intel Core i9-14900K</div>
+        <div class="prod-spec">24 ядра / 5.8 ГГц / LGA1700 / 125W</div>
+        <div class="prod-footer">
+          <div class="prod-price">49 990 ₽</div>
+          <button class="add-btn" onclick="addToCart(this, 'Intel Core i9-14900K', 49990, '⚡')">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-card" data-cat="cpu">
+      <div class="prod-img">⚡<span class="prod-badge badge-new">✨ Новинка</span></div>
+      <div class="prod-body">
+        <div class="prod-cat">Процессоры</div>
+        <div class="prod-name">AMD Ryzen 9 7950X</div>
+        <div class="prod-spec">16 ядер / 5.7 ГГц / AM5 / 170W</div>
+        <div class="prod-footer">
+          <div class="prod-price">44 990 ₽</div>
+          <button class="add-btn" onclick="addToCart(this, 'AMD Ryzen 9 7950X', 44990, '⚡')">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-card" data-cat="cpu">
+      <div class="prod-img">⚡<span class="prod-badge badge-sale">−15%</span></div>
+      <div class="prod-body">
+        <div class="prod-cat">Процессоры</div>
+        <div class="prod-name">AMD Ryzen 5 7600X</div>
+        <div class="prod-spec">6 ядер / 5.3 ГГц / AM5 / 105W</div>
+        <div class="prod-footer">
+          <div class="prod-price"><span class="old">18 990 ₽</span>16 140 ₽</div>
+          <button class="add-btn" onclick="addToCart(this, 'AMD Ryzen 5 7600X', 16140, '⚡')">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-card" data-cat="gpu">
+      <div class="prod-img">🎮<span class="prod-badge badge-hot">🔥 Хит</span></div>
+      <div class="prod-body">
+        <div class="prod-cat">Видеокарты</div>
+        <div class="prod-name">RTX 4070 Ti Super</div>
+        <div class="prod-spec">16 ГБ GDDR6X / 256-bit / DLSS 3</div>
+        <div class="prod-footer">
+          <div class="prod-price">69 990 ₽</div>
+          <button class="add-btn" onclick="addToCart(this, 'RTX 4070 Ti Super', 69990, '🎮')">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-card" data-cat="gpu">
+      <div class="prod-img">🎮<span class="prod-badge badge-sale">−20%</span></div>
+      <div class="prod-body">
+        <div class="prod-cat">Видеокарты</div>
+        <div class="prod-name">RTX 4070 Super</div>
+        <div class="prod-spec">12 ГБ GDDR6X / 192-bit / DLSS 3</div>
+        <div class="prod-footer">
+          <div class="prod-price"><span class="old">68 990 ₽</span>54 990 ₽</div>
+          <button class="add-btn" onclick="addToCart(this, 'RTX 4070 Super', 54990, '🎮')">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-card" data-cat="gpu">
+      <div class="prod-img">🎮<span class="prod-badge badge-new">✨ Новинка</span></div>
+      <div class="prod-body">
+        <div class="prod-cat">Видеокарты</div>
+        <div class="prod-name">RX 7800 XT</div>
+        <div class="prod-spec">16 ГБ GDDR6 / 256-bit / FSR 3</div>
+        <div class="prod-footer">
+          <div class="prod-price">38 990 ₽</div>
+          <button class="add-btn" onclick="addToCart(this, 'RX 7800 XT', 38990, '🎮')">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-card" data-cat="ssd">
+      <div class="prod-img">💾<span class="prod-badge badge-hot">🔥 Хит</span></div>
+      <div class="prod-body">
+        <div class="prod-cat">Накопители</div>
+        <div class="prod-name">Samsung 990 Pro 2 ТБ</div>
+        <div class="prod-spec">NVMe M.2 / 7450 МБ/с / PCIe 4.0</div>
+        <div class="prod-footer">
+          <div class="prod-price">12 990 ₽</div>
+          <button class="add-btn" onclick="addToCart(this, 'Samsung 990 Pro 2 ТБ', 12990, '💾')">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-card" data-cat="ssd">
+      <div class="prod-img">💾<span class="prod-badge badge-sale">−10%</span></div>
+      <div class="prod-body">
+        <div class="prod-cat">Накопители</div>
+        <div class="prod-name">WD Black SN850X 1 ТБ</div>
+        <div class="prod-spec">NVMe M.2 / 7300 МБ/с / PCIe 4.0</div>
+        <div class="prod-footer">
+          <div class="prod-price"><span class="old">8 990 ₽</span>8 090 ₽</div>
+          <button class="add-btn" onclick="addToCart(this, 'WD Black SN850X 1 ТБ', 8090, '💾')">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-card" data-cat="ssd">
+      <div class="prod-img">💾</div>
+      <div class="prod-body">
+        <div class="prod-cat">Накопители</div>
+        <div class="prod-name">Crucial P3 Plus 2 ТБ</div>
+        <div class="prod-spec">NVMe M.2 / 5000 МБ/с / PCIe 3.0</div>
+        <div class="prod-footer">
+          <div class="prod-price">7 490 ₽</div>
+          <button class="add-btn" onclick="addToCart(this, 'Crucial P3 Plus 2 ТБ', 7490, '💾')">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-card" data-cat="ram">
+      <div class="prod-img">🧮<span class="prod-badge badge-new">✨ Новинка</span></div>
+      <div class="prod-body">
+        <div class="prod-cat">Оперативная память</div>
+        <div class="prod-name">Kingston Fury Beast DDR5 32 ГБ</div>
+        <div class="prod-spec">2×16 ГБ / 6000 МГц / CL36</div>
+        <div class="prod-footer">
+          <div class="prod-price">9 990 ₽</div>
+          <button class="add-btn" onclick="addToCart(this, 'Kingston Fury DDR5 32 ГБ', 9990, '🧮')">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-card" data-cat="ram">
+      <div class="prod-img">🧮<span class="prod-badge badge-hot">🔥 Хит</span></div>
+      <div class="prod-body">
+        <div class="prod-cat">Оперативная память</div>
+        <div class="prod-name">G.Skill Trident Z5 64 ГБ</div>
+        <div class="prod-spec">2×32 ГБ / 6400 МГц / CL32</div>
+        <div class="prod-footer">
+          <div class="prod-price">18 990 ₽</div>
+          <button class="add-btn" onclick="addToCart(this, 'G.Skill Trident Z5 64 ГБ', 18990, '🧮')">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-card" data-cat="ram">
+      <div class="prod-img">🧮<span class="prod-badge badge-sale">−12%</span></div>
+      <div class="prod-body">
+        <div class="prod-cat">Оперативная память</div>
+        <div class="prod-name">Corsair Vengeance DDR4 16 ГБ</div>
+        <div class="prod-spec">2×8 ГБ / 3600 МГц / CL18</div>
+        <div class="prod-footer">
+          <div class="prod-price"><span class="old">4 990 ₽</span>4 390 ₽</div>
+          <button class="add-btn" onclick="addToCart(this, 'Corsair Vengeance DDR4 16 ГБ', 4390, '🧮')">+</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- PROMO BANNER -->
+<section id="promo">
+  <div class="promo-banner reveal">
+    <div class="promo-content">
+      <div class="promo-label">Летняя акция</div>
+      <div class="promo-title">Сборка игрового ПК — дешевле</div>
+      <p class="promo-sub">При покупке процессора и видеокарты из нашего каталога — скидка 5% на весь заказ. Только до конца июля.</p>
+      <div style="margin-top: 24px;">
+        <button class="btn-primary" onclick="document.getElementById('catalog').scrollIntoView({behavior:'smooth'})">Выбрать комплектующие</button>
+      </div>
+    </div>
+    <div class="promo-discount">−5%</div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-header reveal">
+    <div class="section-tag">О нас</div>
+    <div class="section-title">Почему TechStore?</div>
+  </div>
+  <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px;" class="reveal">
+    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 28px;">
+      <div style="font-size: 32px; margin-bottom: 16px;">🔒</div>
+      <div style="font-family: 'Syne'; font-weight: 700; font-size: 15px; margin-bottom: 8px;">Гарантия подлинности</div>
+      <div style="font-size: 13px; color: var(--muted); line-height: 1.6;">Только официальные поставки от авторизованных дистрибьюторов.</div>
+    </div>
+    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 28px;">
+      <div style="font-size: 32px; margin-bottom: 16px;">🚚</div>
+      <div style="font-family: 'Syne'; font-weight: 700; font-size: 15px; margin-bottom: 8px;">Доставка 1–3 дня</div>
+      <div style="font-size: 13px; color: var(--muted); line-height: 1.6;">СДЭК, Почта России, курьер до двери по всей стране.</div>
+    </div>
+    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 28px;">
+      <div style="font-size: 32px; margin-bottom: 16px;">🛡</div>
+      <div style="font-family: 'Syne'; font-weight: 700; font-size: 15px; margin-bottom: 8px;">Гарантия 2 года</div>
+      <div style="font-size: 13px; color: var(--muted); line-height: 1.6;">Официальная гарантия производителя на все товары.</div>
+    </div>
+    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 28px;">
+      <div style="font-size: 32px; margin-bottom: 16px;">💬</div>
+      <div style="font-family: 'Syne'; font-weight: 700; font-size: 15px; margin-bottom: 8px;">Поддержка 24/7</div>
+      <div style="font-size: 13px; color: var(--muted); line-height: 1.6;">Онлайн-чат, телефон и e-mail — всегда на связи.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACTS -->
+<section id="contacts">
+  <div class="section-header reveal">
+    <div class="section-tag">Контакты</div>
+    <div class="section-title">Свяжитесь с нами</div>
+  </div>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; max-width: 700px;" class="reveal">
+    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px;">
+      <div style="font-size: 24px; margin-bottom: 12px;">📍</div>
+      <div style="font-family: 'Syne'; font-size: 14px; font-weight: 700; margin-bottom: 6px;">Адрес</div>
+      <div style="font-size: 13px; color: var(--muted);">г. Рязань, ул. Гагарина, 15</div>
+    </div>
+    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px;">
+      <div style="font-size: 24px; margin-bottom: 12px;">📞</div>
+      <div style="font-family: 'Syne'; font-size: 14px; font-weight: 700; margin-bottom: 6px;">Телефон</div>
+      <div style="font-size: 13px; color: var(--muted);">+7 (4912) 00-00-00</div>
+    </div>
+    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px;">
+      <div style="font-size: 24px; margin-bottom: 12px;">✉️</div>
+      <div style="font-family: 'Syne'; font-size: 14px; font-weight: 700; margin-bottom: 6px;">E-mail</div>
+      <div style="font-size: 13px; color: var(--muted);">info@techstore-ryazan.ru</div>
+    </div>
+    <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 24px;">
+      <div style="font-size: 24px; margin-bottom: 12px;">🕐</div>
+      <div style="font-family: 'Syne'; font-size: 14px; font-weight: 700; margin-bottom: 6px;">Режим работы</div>
+      <div style="font-size: 13px; color: var(--muted);">Пн–Сб: 9:00–20:00</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="footer-logo"><span>T</span>echStore</div>
+    <div style="font-size: 13px; margin-top: 4px;">© 2024 TechStore. Все права защищены.</div>
+  </div>
+  <div class="footer-col">
+    <h4>Каталог</h4>
+    <a href="#">Процессоры</a>
+    <a href="#">Видеокарты</a>
+    <a href="#">Накопители</a>
+    <a href="#">Память</a>
+  </div>
+  <div class="footer-col">
+    <h4>Покупателям</h4>
+    <a href="#">Доставка и оплата</a>
+    <a href="#">Гарантия</a>
+    <a href="#">Возврат</a>
+    <a href="#">Вопросы и ответы</a>
+  </div>
+  <div class="footer-col">
+    <h4>Компания</h4>
+    <a href="#">О нас</a>
+    <a href="#">Контакты</a>
+    <a href="#">Политика конфиденциальности</a>
+  </div>
+</footer>
+
+<!-- CART SIDEBAR -->
+<div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+<div class="cart-panel" id="cartPanel">
+  <div class="cart-header">
+    <span class="cart-title">Корзина</span>
+    <button class="close-btn" onclick="toggleCart()">✕</button>
+  </div>
+  <div class="cart-items" id="cartItems">
+    <div class="cart-empty" id="cartEmpty">
+      <div class="cart-empty-icon">🛒</div>
+      <div>Корзина пуста</div>
+    </div>
+  </div>
+  <div class="cart-footer">
+    <div class="cart-total">
+      <span class="ct-label">Итого</span>
+      <span class="ct-amount" id="cartTotal">0 ₽</span>
+    </div>
+    <button class="btn-primary" style="width:100%; padding:14px; font-size:15px;" onclick="openOrder()">Оформить заказ</button>
+  </div>
+</div>
+
+<!-- ORDER MODAL -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <div id="orderForm">
+      <div class="modal-title">Оформление заказа</div>
+      <div class="modal-sub">Заполните данные и мы свяжемся с вами для подтверждения</div>
+      <div class="form-group">
+        <label>Имя</label>
+        <input type="text" id="fName" placeholder="Иван Иванов">
+      </div>
+      <div class="form-group">
+        <label>Телефон</label>
+        <input type="tel" id="fPhone" placeholder="+7 (___) ___-__-__">
+      </div>
+      <div class="form-group">
+        <label>E-mail</label>
+        <input type="email" id="fEmail" placeholder="ivan@example.com">
+      </div>
+      <div class="form-group">
+        <label>Способ доставки</label>
+        <select id="fDelivery">
+          <option>СДЭК — до пункта выдачи</option>
+          <option>Курьер до двери</option>
+          <option>Почта России</option>
+          <option>Самовывоз из магазина</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Способ оплаты</label>
+        <select id="fPayment">
+          <option>Онлайн картой (Visa/Мир)</option>
+          <option>ЮKassa</option>
+          <option>СБП (QR-код)</option>
+          <option>Наличными при получении</option>
+        </select>
+      </div>
+      <div class="modal-btns">
+        <button class="btn-primary" style="flex:1; padding:14px;" onclick="submitOrder()">Подтвердить заказ</button>
+        <button class="btn-ghost" style="padding:14px 20px;" onclick="closeModal()">Отмена</button>
+      </div>
+    </div>
+    <div id="orderSuccess" style="display:none">
+      <div class="success-state">
+        <div class="success-icon">✅</div>
+        <div class="success-title">Заказ принят!</div>
+        <div class="success-sub">Спасибо! Мы получили ваш заказ и свяжемся с вами в течение 30 минут для подтверждения.</div>
+        <button class="btn-primary" style="margin-top:28px; padding:12px 32px;" onclick="closeModal()">Отлично!</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+  // Cart state
+  const cart = {};
+
+  function addToCart(btn, name, price, icon) {
+    if (cart[name]) {
+      cart[name].qty++;
+    } else {
+      cart[name] = { price, icon, qty: 1 };
+    }
+    btn.textContent = '✓';
+    btn.classList.add('added');
+    setTimeout(() => { btn.textContent = '+'; btn.classList.remove('added'); }, 1200);
+    renderCart();
+    showToast('Добавлено: ' + name.slice(0, 28));
+  }
+
+  function renderCart() {
+    const items = Object.entries(cart);
+    const badge = document.getElementById('cartBadge');
+    const empty = document.getElementById('cartEmpty');
+    const container = document.getElementById('cartItems');
+    const total = items.reduce((s, [, v]) => s + v.price * v.qty, 0);
+    const count = items.reduce((s, [, v]) => s + v.qty, 0);
+
+    badge.style.display = count > 0 ? 'flex' : 'none';
+    badge.textContent = count;
+    document.getElementById('cartTotal').textContent = total.toLocaleString('ru') + ' ₽';
+
+    // Remove old items
+    container.querySelectorAll('.cart-item').forEach(e => e.remove());
+    empty.style.display = items.length ? 'none' : 'block';
+
+    items.forEach(([name, item]) => {
+      const el = document.createElement('div');
+      el.className = 'cart-item';
+      el.innerHTML = `
+        <div class="ci-icon">${item.icon}</div>
+        <div class="ci-info">
+          <div class="ci-name">${name}</div>
+          <div class="ci-price">${(item.price * item.qty).toLocaleString('ru')} ₽</div>
+        </div>
+        <div class="ci-qty">
+          <button class="qty-btn" onclick="changeQty('${name}', -1)">−</button>
+          <span class="qty-num">${item.qty}</span>
+          <button class="qty-btn" onclick="changeQty('${name}', 1)">+</button>
+        </div>`;
+      container.appendChild(el);
+    });
+  }
+
+  function changeQty(name, delta) {
+    if (!cart[name]) return;
+    cart[name].qty += delta;
+    if (cart[name].qty <= 0) delete cart[name];
+    renderCart();
+  }
+
+  function toggleCart() {
+    document.getElementById('cartOverlay').classList.toggle('open');
+    document.getElementById('cartPanel').classList.toggle('open');
+  }
+
+  function openOrder() {
+    if (!Object.keys(cart).length) { showToast('Корзина пуста!'); return; }
+    toggleCart();
+    document.getElementById('modalOverlay').classList.add('open');
+    document.getElementById('orderForm').style.display = 'block';
+    document.getElementById('orderSuccess').style.display = 'none';
+  }
+
+  function closeModal() {
+    document.getElementById('modalOverlay').classList.remove('open');
+  }
+
+  function submitOrder() {
+    const name = document.getElementById('fName').value.trim();
+    const phone = document.getElementById('fPhone').value.trim();
+    if (!name || !phone) { showToast('Заполните имя и телефон'); return; }
+    document.getElementById('orderForm').style.display = 'none';
+    document.getElementById('orderSuccess').style.display = 'block';
+    Object.keys(cart).forEach(k => delete cart[k]);
+    renderCart();
+  }
+
+  // Category filter
+  function filterCat(cat, el) {
+    document.querySelectorAll('.cat-card').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    document.querySelectorAll('#productGrid .product-card').forEach(card => {
+      card.classList.toggle('hidden', cat !== 'all' && card.dataset.cat !== cat);
+    });
+  }
+
+  // Toast
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2400);
+  }
+
+  // Scroll reveal
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+  // Close modal on overlay click
+  document.getElementById('modalOverlay').addEventListener('click', function(e) {
+    if (e.target === this) closeModal();
+  });
+</script>
+</body>
+</html>
